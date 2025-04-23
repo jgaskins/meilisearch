@@ -76,12 +76,14 @@ module Meilisearch
         writer.close
       end
 
-      upsert_impl index_uid, reader
+      upsert_impl index_uid, reader, headers: HTTP::Headers{
+        "Content-Type" => "application/x-ndjson",
+      }
     end
 
-    private def upsert_impl(index_uid : String, body)
+    private def upsert_impl(index_uid : String, body, headers : HTTP::Headers? = nil)
       response(
-        http.post("/indexes/#{index_uid}/documents", headers: HTTP::Headers{"Content-Type" => "application/x-ndjson"}, body: body),
+        http.post("/indexes/#{index_uid}/documents", headers: headers, body: body),
         as: TaskResult,
       )
     end
