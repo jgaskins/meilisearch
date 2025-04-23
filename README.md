@@ -44,13 +44,23 @@ The `primary_key` argument is optional. If you don't set it here, the index will
 
 ### Add documents to an index
 
-Documents in Meilisearch are "upserted", meaning they're either updated or inserted depending on the value of the index's `primary_key`. You can upsert a document by calling `upsert` on the `documents` API (also available abbreviated as `docs`)
+Documents in Meilisearch are "upserted", meaning they're either updated or inserted depending on the value of the index's `primary_key`. You can upsert a document by calling `upsert` on the `documents` API (also available abbreviated as `docs`):
 
 ```crystal
 meilisearch.docs.upsert "posts", PostQuery.new.to_a
 ```
 
-The `documents`
+You can also add documents using an index client, returned from `meilisearch.index("index-name")`:
+
+```crystal
+meilisearch.index("posts").upsert PostQuery.new.to_a
+```
+
+If you are indexing a large number of documents, such as reindexing an entire table from an RDBMS, you can pass a non-array `Enumerable` and it will stream the results to Meilisearch. For example, `Interro::QueryBuilder` instances stream results from Postgres and are `Enumerable`, so you can pass your `QueryBuilder` directly and you will only hold one record in memory at a time and you'll never hold the JSON representation in memory at all:
+
+```crystal
+meilisearch.index("posts").upsert PostQuery.new
+```
 
 ## Development
 
