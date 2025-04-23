@@ -1,4 +1,4 @@
-name: Crystal Meilisearch Client Tests
+name: CI
 
 on:
   push:
