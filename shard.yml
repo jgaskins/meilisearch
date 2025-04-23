@@ -1,0 +1,21 @@
+name: meilisearch
+version: 0.1.0
+
+authors:
+  - Jamie Gaskins <jgaskins@hey.com>
+
+dependencies:
+  http_client:
+    github: jgaskins/http_client
+  duration:
+    github: jgaskins/duration
+
+development_dependencies:
+  meilisearch:
+    path: .
+  measure:
+    github: jgaskins/measure
+
+crystal: '>= 1.15.0'
+
+license: MIT
