@@ -6,12 +6,6 @@ on:
   pull_request:
     branches: [main]
 
-env:
-  # Arbitrary generated value, used by the server
-  MEILI_MASTER_KEY: X30-IR0dDR_Hln8XYQI_SpAVtDtu0NIrCH8EeGKrSsQ
-  # Used by the Crystal client
-  MEILISEARCH_API_KEY: X30-IR0dDR_Hln8XYQI_SpAVtDtu0NIrCH8EeGKrSsQ
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -30,6 +24,8 @@ jobs:
     services:
       meilisearch:
         image: getmeili/meilisearch:${{ matrix.meilisearch_version }}
+        env:
+          MEILI_MASTER_KEY: X30-IR0dDR_Hln8XYQI_SpAVtDtu0NIrCH8EeGKrSsQ
         ports:
           - 7700:7700
         options: >-
@@ -61,6 +57,6 @@ jobs:
       run: shards install
 
     - name: Run tests
-      run: crystal spec
+      run: crystal spec --verbose
       env:
-        MEILISEARCH_URL: http://localhost:7700
+        MEILISEARCH_API_KEY: X30-IR0dDR_Hln8XYQI_SpAVtDtu0NIrCH8EeGKrSsQ
