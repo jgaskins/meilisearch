@@ -10,7 +10,6 @@ module Meilisearch
     def add_documents!(docs : Enumerable)
       task = client.wait_for_task(client.docs.upsert(@uid, docs))
       successful task do
-
       end
     end
 
