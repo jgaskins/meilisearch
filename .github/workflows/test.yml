@@ -44,7 +44,7 @@ jobs:
         crystal_version: ${{ matrix.crystal_version }}
 
     - name: Cache dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: |
           ~/.cache/shards
