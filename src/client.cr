@@ -3,6 +3,7 @@ require "json"
 require "uuid"
 
 require "./error"
+require "./key"
 
 module Meilisearch
   class Client
@@ -31,7 +32,7 @@ module Meilisearch
     def keys
       response = @http.get "/keys"
       if response.success?
-        JSON.parse response.body
+        List(Key).from_json response.body
       else
         raise API::Error.new("Unexpected response from Meilisearch: #{response.status} (#{response.status.code}) - #{response.body}")
       end

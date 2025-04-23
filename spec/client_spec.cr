@@ -67,7 +67,8 @@ module ClientSpec
 
     if master_key = ENV["MEILISEARCH_MASTER_KEY"]?
       it "gets API keys" do
-        # TODO: Do something with this
+        # TODO: Do something with this. In the meantime, the fact that it
+        # executes without failure is sufficient.
         Meilisearch::Client.new(master_key).keys
       end
     else
@@ -80,7 +81,7 @@ module ClientSpec
     end
 
     # This example was largely taken from the meilisearch-ruby README.md file
-    it "provides a high-level API", focus: true do
+    it "provides a high-level API" do
       index = client.index("movies")
 
       documents = [
