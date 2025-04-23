@@ -1,0 +1,66 @@
+name: Crystal Meilisearch Client Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  # Arbitrary generated value, used by the server
+  MEILI_MASTER_KEY: X30-IR0dDR_Hln8XYQI_SpAVtDtu0NIrCH8EeGKrSsQ
+  # Used by the Crystal client
+  MEILISEARCH_API_KEY: X30-IR0dDR_Hln8XYQI_SpAVtDtu0NIrCH8EeGKrSsQ
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        crystal_version:
+        - 1.16.1
+        - 1.15.1
+        - 1.14.1
+        - latest
+        - nightly
+        meilisearch_version:
+        - v1.14
+
+    services:
+      meilisearch:
+        image: getmeili/meilisearch:${{ matrix.meilisearch_version }}
+        ports:
+          - 7700:7700
+        options: >-
+          --health-cmd "curl -s http://localhost:7700/health > /dev/null || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Crystal
+      uses: crystal-lang/install-crystal@v1
+      with:
+        crystal_version: ${{ matrix.crystal_version }}
+
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cache/shards
+          lib
+        key: ${{ runner.os }}-shards-${{ hashFiles('**/shard.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-shards-
+
+    - name: Install dependencies
+      run: shards install
+
+    - name: Run tests
+      run: crystal spec
+      env:
+        MEILISEARCH_URL: http://localhost:7700

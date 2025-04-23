@@ -65,7 +65,7 @@ module ClientSpec
   describe Meilisearch::Client do
     client = Meilisearch::Client.new
 
-    if master_key = ENV["MEILISEARCH_MASTER_KEY"]?
+    if master_key = ENV["MEILISEARCH_MASTER_KEY"]? || ENV["MEILI_MASTER_KEY"]?
       it "gets API keys" do
         # TODO: Do something with this. In the meantime, the fact that it
         # executes without failure is sufficient.
