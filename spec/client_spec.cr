@@ -40,6 +40,21 @@ module ClientSpec
     end
   end
 
+  struct Product
+    include JSON::Serializable
+
+    getter id : Int64
+    getter name : String
+    getter brand : String
+    getter category : Category
+
+    enum Category
+      Phone
+      Tablet
+      Speaker
+    end
+  end
+
   # Testing lazy iteration for arbitrarily sized upserts
   struct Iterator(T)
     include ::Iterator(T)
@@ -64,6 +79,13 @@ module ClientSpec
 
   describe Meilisearch::Client do
     client = Meilisearch::Client.new
+
+    # # For when I forget to delete indexes in tests 🙃
+    # while (indexes = client.indexes.list.select { |index| UUID.parse? index.uid}).any?
+    #   indexes.each do |index|
+    #     client.indexes.delete index
+    #   end
+    # end
 
     if master_key = ENV["MEILISEARCH_MASTER_KEY"]?
       it "gets API keys" do
@@ -255,6 +277,49 @@ module ClientSpec
           client.indexes.delete index1
           client.indexes.delete index2
           client.indexes.delete excluded_index
+        end
+      end
+
+      it "does faceted search" do
+        products = client.indexes.create!(UUID.v7.to_s, primary_key: "id")
+        begin
+          client.indexes.settings.update! products, filterable_attributes: %w[
+            brand
+            category
+            price_cents
+          ]
+          client.docs.upsert! products, [
+            {id: 1, brand: "Apple", category: "phone", name: "iPhone", price_cents: 850_00},
+            {id: 2, brand: "Apple", category: "tablet", name: "iPad", price_cents: 999_00},
+            {id: 3, brand: "Samsung", category: "phone", name: "Galaxy", price_cents: 900_00},
+            {id: 4, brand: "Apple", category: "speaker", name: "Homepod", price_cents: 350_00},
+            {id: 5, brand: "Amazon", category: "speaker", name: "Alexa", price_cents: 200_00},
+          ]
+
+          response = client.federated_search(
+            queries: [
+              client.query(index_uid: products.uid),
+            ],
+            facets_by_index: {
+              products.uid => %w[brand category],
+            },
+            as: Product,
+          )
+
+          response.facets_by_index![products.uid].distribution.should eq({
+            "brand" => {
+              "Amazon"  => 1,
+              "Apple"   => 3,
+              "Samsung" => 1,
+            },
+            "category" => {
+              "phone"   => 2,
+              "speaker" => 2,
+              "tablet"  => 1,
+            },
+          })
+        ensure
+          client.indexes.delete products
         end
       end
     end

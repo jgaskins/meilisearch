@@ -297,13 +297,5 @@ module Meilisearch
         end
       end
     end
-
-    private macro pass(*args)
-      {
-        {% for arg in args %}
-          {{arg}}: {{arg}},
-        {% end %}
-      }
-    end
   end
 end

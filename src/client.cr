@@ -47,9 +47,20 @@ module Meilisearch
 
     def federated_search(
       queries : Enumerable(Query),
-      federation = NamedTuple.new,
+      offset : Int64? = nil,
+      limit : Int32? = nil,
+      facets_by_index : Hash(String, Array(String))? = nil,
+      merge_facets : Hash(String, JSON::Any)? = nil,
       as type : T.class = JSON::Any,
     ) forall T
+      federation = MultiSearch::FederationOptions.new(
+        **API.pass(
+          offset,
+          limit,
+          facets_by_index,
+          merge_facets,
+        ),
+      )
       MultiSearch.new(self).call queries, federation,
         as: SearchResponse(MultiSearch::FederatedResult(T))
     end

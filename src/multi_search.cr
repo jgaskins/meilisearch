@@ -10,6 +10,12 @@ module Meilisearch
         as: T
     end
 
+    Resource.define FederationOptions,
+      offset : Int64? = nil,
+      limit : Int32? = nil,
+      facets_by_index : Hash(String, Array(String))? = nil,
+      merge_facets : Hash(String, JSON::Any)? = nil
+
     struct Response(T) < Resource
       field results : Array(SearchResponse(T))
     end

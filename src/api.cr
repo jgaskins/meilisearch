@@ -33,6 +33,15 @@ module Meilisearch
       raise TaskUnsuccessful.new("Task did not succeed: #{task}")
     end
 
+    # :nodoc:
+    macro pass(*args)
+      {
+        {% for arg in args %}
+          {{arg}}: {{arg}},
+        {% end %}
+      }
+    end
+
     class Error < Meilisearch::Error
     end
 

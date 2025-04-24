@@ -12,7 +12,21 @@ module Meilisearch
     field index_uid : String?
     field limit : Int32
     field offset : Int64
+    field facets_by_index : Hash(String, Facet)?
 
     delegate each, to: hits
+
+    Resource.define Facet,
+      distribution : Hash(String, Distribution),
+      stats : Hash(String, Stats) do
+      include JSON::Serializable::Unmapped
+      alias Distribution = Hash(String, Int64)
+
+      Resource.define Stats,
+        min : Float64,
+        max : Float64 do
+        include JSON::Serializable::Unmapped
+      end
+    end
   end
 end
