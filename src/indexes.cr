@@ -137,16 +137,6 @@ module Meilisearch
       matching_strategy : Query::MatchingStrategy? = nil
 
     struct FacetSearchResponse < Resource
-      {
-        "facetHits" => [
-          {"value" => "Amazon", "count" => 1},
-          {"value" => "Apple", "count" => 3},
-          {"value" => "Samsung", "count" => 1},
-        ],
-        "facetQuery"       => nil,
-        "processingTimeMs" => 0,
-      }
-
       field facet_hits : Array(FacetHit)
       field facet_query : String?
       field processing_time : Time::Span, key: "processingTimeMs", converter: Meilisearch::SpanMillisecondsConverter

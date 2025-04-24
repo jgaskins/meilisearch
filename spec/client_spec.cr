@@ -190,7 +190,7 @@ module ClientSpec
         results.should_not contain excluded
       end
 
-      test_with_index "does faceted search", focus: true do |index, client|
+      test_with_index "does faceted search" do |index, client|
         client.indexes.settings.update! index, filterable_attributes: %w[brand category status]
         client.docs.upsert! index, [
           Product.new(id: 1, brand: "Apple", category: :phone, name: "iPhone", price_cents: 850_00),
