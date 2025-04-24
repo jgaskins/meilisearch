@@ -41,7 +41,7 @@ jobs:
     - name: Install Crystal
       uses: crystal-lang/install-crystal@v1
       with:
-        crystal_version: ${{ matrix.crystal_version }}
+        crystal: ${{ matrix.crystal_version }}
 
     - name: Cache dependencies
       uses: actions/cache@v4
