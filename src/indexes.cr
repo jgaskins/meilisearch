@@ -58,7 +58,7 @@ module Meilisearch
       highlight_post_tag : String? = nil,
       show_matches_position : Bool? = nil,
       sort : Array(String)? = nil,
-      matching_strategy : String? = nil,
+      matching_strategy : Query::MatchingStrategy? = nil,
       show_ranking_score : Bool? = nil,
       show_ranking_score_details : Bool? = nil,
       ranking_score_threshold : Float? = nil,
@@ -103,6 +103,57 @@ module Meilisearch
         http.post("/indexes/#{uid}/search", body: request.to_json),
         as: SearchResponse(T),
       )
+    end
+
+    def facet_search(
+      index : String | Index,
+      facet_name : String? = nil,
+      facet_query : String? = nil,
+      q : String? = nil,
+      filter : String? = nil,
+      matching_strategy : Query::MatchingStrategy? = nil,
+    )
+      index = index.uid if index.is_a? Index
+      request = FacetSearchRequest.new(
+        **pass(
+          facet_name,
+          facet_query,
+          q,
+          filter,
+          matching_strategy,
+        ),
+      )
+      response(
+        http.post("/indexes/#{index}/facet-search", body: request.to_json),
+        as: FacetSearchResponse,
+      )
+    end
+
+    Resource.define FacetSearchRequest,
+      facet_name : String? = nil,
+      facet_query : String? = nil,
+      q : String? = nil,
+      filter : String? = nil,
+      matching_strategy : Query::MatchingStrategy? = nil
+
+    struct FacetSearchResponse < Resource
+      {
+        "facetHits" => [
+          {"value" => "Amazon", "count" => 1},
+          {"value" => "Apple", "count" => 3},
+          {"value" => "Samsung", "count" => 1},
+        ],
+        "facetQuery"       => nil,
+        "processingTimeMs" => 0,
+      }
+
+      field facet_hits : Array(FacetHit)
+      field facet_query : String?
+      field processing_time : Time::Span, key: "processingTimeMs", converter: Meilisearch::SpanMillisecondsConverter
+
+      Resource.define FacetHit,
+        value : String,
+        count : Int64
     end
 
     def create!(uid : String, *, primary_key : String? = nil, timeout : Time::Span = client.timeout)

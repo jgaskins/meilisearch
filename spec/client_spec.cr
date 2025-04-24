@@ -47,11 +47,21 @@ module ClientSpec
     getter name : String
     getter brand : String
     getter category : Category
+    getter price_cents : Int64
+    getter status : Status = :available
+
+    def initialize(@id, @name, @brand, @category, @price_cents, @status = :available)
+    end
 
     enum Category
       Phone
       Tablet
       Speaker
+    end
+
+    enum Status
+      Available
+      Discontinued
     end
   end
 
@@ -178,6 +188,35 @@ module ClientSpec
 
         results.should contain included
         results.should_not contain excluded
+      end
+
+      test_with_index "does faceted search", focus: true do |index, client|
+        client.indexes.settings.update! index, filterable_attributes: %w[brand category status]
+        client.docs.upsert! index, [
+          Product.new(id: 1, brand: "Apple", category: :phone, name: "iPhone", price_cents: 850_00),
+          Product.new(id: 2, brand: "Apple", category: :tablet, name: "iPad", price_cents: 999_00),
+          Product.new(id: 3, brand: "Samsung", category: :phone, name: "Galaxy", price_cents: 900_00),
+          Product.new(id: 4, brand: "Apple", category: :speaker, name: "Homepod", price_cents: 350_00),
+          Product.new(id: 5, brand: "Amazon", category: :speaker, name: "Alexa", price_cents: 200_00),
+        ]
+
+        client.indexes
+          # Run the facet search
+          .facet_search(
+            index: index,
+            facet_name: "brand",
+            filter: "status = 'available'",
+          )
+          .facet_hits
+          # Make a hash from the facets. To be honest, I don't know why
+          # Meilisearch doesn't return them as a hash like it does federated
+          # facets.
+          .map { |hit| {hit.value, hit.count} }.to_h
+          .should eq({
+            "Amazon"  => 1,
+            "Apple"   => 3,
+            "Samsung" => 1,
+          })
       end
     end
 

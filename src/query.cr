@@ -61,6 +61,13 @@ module Meilisearch
       @federation_options = nil,
     )
     end
+
+    # https://www.meilisearch.com/docs/reference/api/search#matching-strategy
+    enum MatchingStrategy
+      Last
+      All
+      Frequency
+    end
   end
 
   struct FederationOptions < Resource
