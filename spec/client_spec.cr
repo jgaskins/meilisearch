@@ -115,6 +115,7 @@ module ClientSpec
     # This example was largely taken from the meilisearch-ruby README.md file
     it "provides a high-level API" do
       index = client.index("movies")
+      client.indexes.settings.update! "movies", filterable_attributes: %w[genres]
 
       documents = [
         {id: 1, title: "Carol", genres: ["Romance", "Drama"]},
@@ -148,6 +149,18 @@ module ClientSpec
           genres: Movie::Genre[Action, Adventure],
         ),
       ]
+
+      index.facet_search(facet_name: "genres")
+        .facet_hits
+        .map { |hit| {hit.value, hit.count} }.to_h
+        .should eq({
+          "Action"          => 2,
+          "Adventure"       => 3,
+          "Drama"           => 3,
+          "Fantasy"         => 1,
+          "Romance"         => 1,
+          "Science Fiction" => 1,
+        })
     ensure
       client.indexes.delete "movies"
     end

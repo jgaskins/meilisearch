@@ -21,6 +21,23 @@ module Meilisearch
       @client.indexes.search @uid, **options, query: q
     end
 
+    def facet_search(
+      facet_name : String? = nil,
+      facet_query : String? = nil,
+      q : String? = nil,
+      filter : String? = nil,
+      matching_strategy : Query::MatchingStrategy? = nil,
+    )
+      @client.indexes.facet_search @uid,
+        **pass(
+          facet_name,
+          facet_query,
+          q,
+          filter,
+          matching_strategy,
+        )
+    end
+
     def update_filterable_attributes!(attributes : Array(String), timeout : Time::Span = client.timeout)
       successful(client.wait_for_task(update_filterable_attributes(attributes), timeout: timeout)) do
       end
