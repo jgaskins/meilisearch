@@ -56,7 +56,7 @@ You can also add documents using an index client, returned from `meilisearch.ind
 meilisearch.index("posts").upsert PostQuery.new.to_a
 ```
 
-If you are indexing a large number of documents, such as reindexing an entire table from an RDBMS, you can pass a non-array `Enumerable` and it will stream the results to Meilisearch. For example, `Interro::QueryBuilder` instances stream results from Postgres and are `Enumerable`, so you can pass your `QueryBuilder` directly and you will only hold one record in memory at a time and you'll never hold the JSON representation in memory at all:
+If you are indexing a large number of documents, such as reindexing an entire table from an RDBMS, you can pass a non-array `Enumerable` and it will stream the results to Meilisearch. For example, [`Interro::QueryBuilder`](https://github.com/jgaskins/interro?tab=readme-ov-file#querybuildert) instances stream results from Postgres and are `Enumerable`, so you can pass your `QueryBuilder` directly and you will only hold one record in memory at a time and you'll never hold the JSON representation in memory at all:
 
 ```crystal
 meilisearch.index("posts").upsert PostQuery.new
