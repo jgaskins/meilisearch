@@ -69,7 +69,9 @@ module Meilisearch
       reader, writer = IO.pipe
       spawn do
         documents.each do |doc|
-          doc.to_json writer
+          JSON.build writer do |json|
+            doc.to_json json
+          end
           writer.puts
         end
       ensure

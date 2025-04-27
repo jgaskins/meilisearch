@@ -146,6 +146,33 @@ module Meilisearch
         count : Int64
     end
 
+    def similar(
+      index : Index,
+      id : String | Int32 | Int64,
+      embedder : String = "default",
+      as type : T.class = JSON::Any,
+    ) forall T
+      similar index.uid, **pass(id, embedder), as: T
+    end
+
+    def similar(
+      index_uid : String,
+      id : String | Int32 | Int64,
+      embedder : String = "default",
+      as type : T.class = JSON::Any,
+    ) forall T
+      request = SimilarSearch.new(**pass(id, embedder))
+
+      response(
+        http.post("/indexes/#{index_uid}/similar", body: request.to_json),
+        as: SearchResponse(T),
+      )
+    end
+
+    Resource.define SimilarSearch,
+      id : String | Int32 | Int64,
+      embedder : String
+
     def create!(uid : String, *, primary_key : String? = nil, timeout : Time::Span = client.timeout)
       task = client.wait_for_task(uid: create(uid: uid, primary_key: "id").task_uid, timeout: timeout)
       successful(task) { get(uid) }
@@ -208,22 +235,8 @@ module Meilisearch
     def stats(index_uid : String)
       response(
         http.get("/indexes/#{index_uid}/stats"),
-        as: Stats,
+        as: Index::Stats,
       )
-    end
-
-    struct Stats < Resource
-      field number_of_documents : Int64
-      field? indexing : Bool, key: "isIndexing"
-      field field_distribution : Hash(String, Int64)
-    end
-
-    struct Settings < Resource
-      field displayed_attributes : Array(String)
-      field searchable_attributes : Array(String)
-      field filterable_attributes : Array(String)
-      field sortable_attributes : Array(String)
-      field ranking_rules : Array(String)
     end
 
     struct SettingsAPI < API
@@ -234,7 +247,7 @@ module Meilisearch
       def get(index_uid uid : String)
         response(
           http.get("/indexes/#{uid}/settings"),
-          as: Settings,
+          as: Index::Settings,
         )
       end
 
@@ -246,13 +259,18 @@ module Meilisearch
         filterable_attributes : Array(String)? = nil,
         sortable_attributes : Array(String)? = nil,
         ranking_rules : Array(String)? = nil,
+        typo_tolerance : Index::TypoTolerance? = nil,
+        embedders : Index::Embedders? = nil,
       )
-        update! index.uid,
-          filterable_attributes: filterable_attributes,
-          displayed_attributes: displayed_attributes,
-          searchable_attributes: searchable_attributes,
-          sortable_attributes: sortable_attributes,
-          ranking_rules: ranking_rules
+        update! index.uid, **pass(
+          filterable_attributes,
+          displayed_attributes,
+          searchable_attributes,
+          sortable_attributes,
+          ranking_rules,
+          typo_tolerance,
+          embedders,
+        )
       end
 
       def update!(
@@ -263,13 +281,18 @@ module Meilisearch
         filterable_attributes : Array(String)? = nil,
         sortable_attributes : Array(String)? = nil,
         ranking_rules : Array(String)? = nil,
+        typo_tolerance : Index::TypoTolerance? = nil,
+        embedders : Index::Embedders? = nil,
       )
-        task = update uid,
-          filterable_attributes: filterable_attributes,
-          displayed_attributes: displayed_attributes,
-          searchable_attributes: searchable_attributes,
-          sortable_attributes: sortable_attributes,
-          ranking_rules: ranking_rules
+        task = update uid, **pass(
+          filterable_attributes,
+          displayed_attributes,
+          searchable_attributes,
+          sortable_attributes,
+          ranking_rules,
+          typo_tolerance,
+          embedders,
+        )
         task = client.wait_for_task(task, timeout: 2.seconds)
 
         successful(task) { get uid }
@@ -283,13 +306,18 @@ module Meilisearch
         filterable_attributes : Array(String)? = nil,
         sortable_attributes : Array(String)? = nil,
         ranking_rules : Array(String)? = nil,
+        typo_tolerance : Index::TypoTolerance? = nil,
+        embedders : Index::Embedders? = nil,
       )
-        update index.uid,
-          filterable_attributes: filterable_attributes,
-          displayed_attributes: displayed_attributes,
-          searchable_attributes: searchable_attributes,
-          sortable_attributes: sortable_attributes,
-          ranking_rules: ranking_rules
+        update index.uid, **pass(
+          filterable_attributes,
+          displayed_attributes,
+          searchable_attributes,
+          sortable_attributes,
+          ranking_rules,
+          typo_tolerance,
+          embedders,
+        )
       end
 
       def update(
@@ -300,14 +328,18 @@ module Meilisearch
         filterable_attributes : Array(String)? = nil,
         sortable_attributes : Array(String)? = nil,
         ranking_rules : Array(String)? = nil,
+        typo_tolerance : Index::TypoTolerance? = nil,
+        embedders : Index::Embedders? = nil,
       )
-        request = UpdateRequest.new(
-          filterable_attributes: filterable_attributes,
-          displayed_attributes: displayed_attributes,
-          searchable_attributes: searchable_attributes,
-          sortable_attributes: sortable_attributes,
-          ranking_rules: ranking_rules
-        )
+        request = UpdateRequest.new(**pass(
+          filterable_attributes,
+          displayed_attributes,
+          searchable_attributes,
+          sortable_attributes,
+          ranking_rules,
+          typo_tolerance,
+          embedders,
+        ))
 
         response(
           http.patch("/indexes/#{uid}/settings", body: request.to_json),
@@ -321,20 +353,19 @@ module Meilisearch
         field filterable_attributes : Array(String)?
         field sortable_attributes : Array(String)?
         field ranking_rules : Array(String)?
+        field typo_tolerance : Index::TypoTolerance?
+        field embedders : Index::Embedders?
 
         def initialize(
           *,
-          displayed_attributes : Array(String)? = nil,
-          searchable_attributes : Array(String)? = nil,
-          filterable_attributes : Array(String)? = nil,
-          sortable_attributes : Array(String)? = nil,
-          ranking_rules : Array(String)? = nil,
+          @displayed_attributes : Array(String)? = nil,
+          @searchable_attributes : Array(String)? = nil,
+          @filterable_attributes : Array(String)? = nil,
+          @sortable_attributes : Array(String)? = nil,
+          @ranking_rules : Array(String)? = nil,
+          @typo_tolerance : Index::TypoTolerance? = nil,
+          @embedders : Index::Embedders? = nil,
         )
-          @displayed_attributes = displayed_attributes
-          @searchable_attributes = searchable_attributes
-          @filterable_attributes = filterable_attributes
-          @sortable_attributes = sortable_attributes
-          @ranking_rules = ranking_rules
         end
       end
     end

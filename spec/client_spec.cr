@@ -185,11 +185,21 @@ module ClientSpec
 
       test_with_index "updates an index's settings" do |index, client|
         client.indexes.settings.update! index,
-          filterable_attributes: %w[id author]
+          filterable_attributes: %w[id author],
+          typo_tolerance: Meilisearch::Index::TypoTolerance.new(
+            enabled: true,
+            disable_on_words: %w[one two three],
+            disable_on_attributes: %w[id],
+          )
 
-        attrs = client.indexes.settings.get(index).filterable_attributes
-        attrs.should contain "id"
-        attrs.should contain "author"
+        settings = client.indexes.settings.get(index)
+        settings.filterable_attributes.should contain "id"
+        settings.filterable_attributes.should contain "author"
+        settings.typo_tolerance.enabled?.should eq true
+        settings.typo_tolerance.disable_on_words.should contain "one"
+        settings.typo_tolerance.disable_on_words.should contain "two"
+        settings.typo_tolerance.disable_on_words.should contain "three"
+        settings.typo_tolerance.disable_on_attributes.should eq %w[id]
       end
 
       test_with_index "searches for a document", primary_key: "id" do |index, client|
@@ -204,7 +214,7 @@ module ClientSpec
       end
 
       test_with_index "does faceted search" do |index, client|
-        client.indexes.settings.update! index, filterable_attributes: %w[brand category status]
+        client.indexes.settings.update index, filterable_attributes: %w[brand category status]
         client.docs.upsert! index, [
           Product.new(id: 1, brand: "Apple", category: :phone, name: "iPhone", price_cents: 850_00),
           Product.new(id: 2, brand: "Apple", category: :tablet, name: "iPad", price_cents: 999_00),
@@ -230,6 +240,40 @@ module ClientSpec
             "Apple"   => 3,
             "Samsung" => 1,
           })
+      end
+
+      # # You can uncomment this or just set the env vars.
+      # ENV["MEILISEARCH_EMBEDDER_SOURCE"] = "ollama"
+      # ENV["MEILISEARCH_EMBEDDER_MODEL"] = "snowflake-arctic-embed2"
+      if (embedder_source_string = ENV["MEILISEARCH_EMBEDDER_SOURCE"]?) && (embedder_source = Meilisearch::Index::Embedder::Source.parse?(embedder_source_string)) && (model = ENV["MEILISEARCH_EMBEDDER_MODEL"]?)
+        test_with_index "does similarity searching", primary_key: "id" do |index, client|
+          client.indexes.settings.update! index,
+            embedders: {
+              "default" => Meilisearch::Index::Embedder.new(
+                source: embedder_source,
+                url: ENV["MEILISEARCH_EMBEDDER_URL"]?,
+                api_key: ENV["MEILISEARCH_EMBEDDER_API_KEY"]?,
+                model: model,
+              ),
+            }
+          client.indexes.settings.get index
+          posts = [
+            Post.new(author: "Jamie Gaskins", body: "Performance comparison, Rust vs Crystal with Redis"),
+            Post.new(author: "Ary Borensweig", body: "Incremental compilation exploration"),
+            Post.new(author: "Jamie Gaskins", body: "Postgres Query Planner"),
+          ]
+          client.docs.upsert! index, posts
+
+          client.indexes
+            .similar(index, id: posts.first.id.to_s, as: Post)
+            .map(&.body)
+            .should eq [
+              "Postgres Query Planner",
+              "Incremental compilation exploration",
+            ]
+        end
+      else
+        puts "Set the MEILISEARCH_EMBEDDER_SOURCE and MEILISEARCH_EMBEDDER_MODEL env vars to run similarity specs"
       end
     end
 
