@@ -4,6 +4,7 @@ require "uuid"
 
 require "./error"
 require "./key"
+require "./batches"
 
 module Meilisearch
   class Client
@@ -85,6 +86,10 @@ module Meilisearch
     # The `Documents` API in the context of the current client
     def documents
       Documents.new self
+    end
+
+    def batches
+      Batches.new self
     end
 
     def wait_for_task(task : Task, *, timeout : Time::Span = self.timeout, poll_interval : Time::Span = 100.milliseconds)

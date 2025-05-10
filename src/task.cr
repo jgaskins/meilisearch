@@ -6,30 +6,9 @@ module Meilisearch
   # returns a `Task` subtype.
   abstract struct BasicTask < Resource
     field index_uid : String?
-    field status : Status
-    field type : Type
+    field status : Task::Status
+    field type : Task::Type
     field enqueued_at : Time
-    enum Status
-      ENQUEUED
-      PROCESSING
-      SUCCEEDED
-      FAILED
-      CANCELED
-    end
-
-    enum Type
-      IndexCreation
-      IndexUpdate
-      IndexDeletion
-      IndexSwap
-      DocumentAdditionOrUpdate
-      DocumentDeletion
-      SettingsUpdate
-      DumpCreation
-      TaskCancelation
-      TaskDeletion
-      SnapshotCreation
-    end
   end
 
   struct TaskResult < Resource
@@ -60,10 +39,56 @@ module Meilisearch
       snapshotCreation:         SnapshotCreation,
     }
 
+    enum Status
+      ENQUEUED
+      PROCESSING
+      SUCCEEDED
+      FAILED
+      CANCELED
+
+      def self.from_json_object_key?(key : String)
+        parse? key
+      end
+    end
+
+    enum Type
+      IndexCreation
+      IndexUpdate
+      IndexDeletion
+      IndexSwap
+      DocumentAdditionOrUpdate
+      DocumentDeletion
+      SettingsUpdate
+      DumpCreation
+      TaskCancelation
+      TaskDeletion
+      SnapshotCreation
+
+      def self.from_json_object_key?(key : String)
+        parse? key
+      end
+    end
+
+    abstract struct Details < Resource
+      def self.new(json : ::JSON::PullParser)
+        location = json.location
+        json = json.read_raw
+
+        {% for type in @type.subclasses %}
+          begin
+            return {{type}}.from_json(json)
+          rescue ex
+          end
+        {% end %}
+
+        raise ::JSON::SerializableError.new("Cannot parse #{self} from #{json}", name, "details", *location, nil)
+      end
+    end
+
     macro details
       field! details : Details
 
-      struct Details < Resource
+      struct Details < Meilisearch::Task::Details
         {{yield}}
       end
     end
@@ -151,6 +176,7 @@ module Meilisearch
 
     struct SnapshotCreation < self
       # No details
+      details {}
     end
 
     struct Error < Resource
