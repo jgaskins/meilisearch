@@ -188,7 +188,9 @@ module Meilisearch
     # meilisearch.docs.fetch "users", filter: "status = 'active'", as: User
     # ```
     def fetch(index_uid : String, *, filter : String | Array(String) | Nil = nil, as type : T.class = JSON::Any) forall T
-      request = FetchRequest.new
+      request = FetchRequest.new(
+        filter: filter,
+      )
       response(
         http.post("/indexes/#{index_uid}/documents/fetch", body: request.to_json),
         as: List(T)
