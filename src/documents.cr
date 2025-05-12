@@ -220,6 +220,45 @@ module Meilisearch
       )
     end
 
+    def delete!(index : Index | String, *, filter : String | Array(String), timeout : Time::Span = client.timeout)
+      task = client.wait_for_task(delete(index, filter: filter), timeout: timeout)
+      successful(task) { true }
+    end
+
+    def delete(index : Index, *, filter : String | Array(String))
+      delete index.uid, filter: filter
+    end
+
+    def delete(index_uid : String, *, filter : String | Array(String))
+      response(
+        http.post(
+          "/indexes/#{index_uid}/documents/delete",
+          body: {filter: filter}.to_json,
+        ),
+        as: TaskResult,
+      )
+    end
+
+    def delete_all!(index : Index)
+      delete_all! index.uid
+    end
+
+    def delete_all!(index_uid : String, timeout : Time::Span = client.timeout)
+      task = client.wait_for_task(delete_all(index_uid), timeout: timeout)
+      successful(task) { true }
+    end
+
+    def delete_all(index : Index)
+      delete_all index_uid
+    end
+
+    def delete_all(index_uid : String)
+      response(
+        http.delete("/indexes/#{index_uid}/documents"),
+        as: TaskResult,
+      )
+    end
+
     private struct FetchRequest < Resource
       field filter : String | Array(String) | Nil
       field fields : Array(String)?

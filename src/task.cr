@@ -102,7 +102,7 @@ module Meilisearch
 
     struct DocumentDeletion < self
       details do
-        field provided_ids : Int64
+        field provided_ids : Int64?
         field original_filter : JSON::Any?
         field deleted_documents : Int64?
       end
