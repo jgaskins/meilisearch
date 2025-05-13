@@ -11,7 +11,7 @@ module Meilisearch
     field enqueued_at : Time
   end
 
-  struct TaskResult < Resource
+  struct TaskResult < BasicTask
     field task_uid : Int64
   end
 
