@@ -35,7 +35,7 @@ module Meilisearch
       if response.success?
         List(Key).from_json response.body
       else
-        raise API::Error.new("Unexpected response from Meilisearch: #{response.status} (#{response.status.code}) - #{response.body}")
+        raise API::Exception.new("Unexpected response from Meilisearch: #{response.status} (#{response.status.code}) - #{response.body}")
       end
     end
 
