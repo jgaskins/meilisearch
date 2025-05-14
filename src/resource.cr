@@ -3,6 +3,8 @@ require "uuid/json"
 require "uri/json"
 require "duration"
 
+require "./error"
+
 module Meilisearch
   abstract struct Resource
     include JSON::Serializable
@@ -46,7 +48,7 @@ module Meilisearch
       {% end %}
     end
 
-    class MissingValue < Error
+    class MissingValue < Exception
     end
   end
 

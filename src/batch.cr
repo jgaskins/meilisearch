@@ -57,7 +57,7 @@ module Meilisearch
               end
             end
             if last_digit_index.nil?
-              raise Error.new("Could not parse time duration from #{string.inspect}")
+              raise Exception.new("Could not parse time duration from #{string.inspect}")
             end
             duration = case string[last_digit_index + 1..]
                        when "ns" then magnitude.nanoseconds
@@ -68,7 +68,7 @@ module Meilisearch
                        when "h"  then magnitude.hours
                        when "d"  then magnitude.days
                        else
-                         raise Error.new("Could not parse time duration from #{string.inspect}")
+                         raise Exception.new("Could not parse time duration from #{string.inspect}")
                        end
 
             hash[key] = duration

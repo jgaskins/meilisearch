@@ -19,13 +19,11 @@ module Meilisearch
       response = http.get("/indexes/#{uid}")
       case response.status
       when .success?
-        body = response.body_io? || response.body
-        Index.from_json body
+        Index.from_json response.body
       when .not_found?
         nil
       else
-        body = response.body_io?.try(&.gets_to_end) || response.body
-        raise Error.new("Unexpected response from Meilisearch: #{response.status} (#{response.status.code}) - #{body}")
+        raise Error.from_json(response.body)
       end
     end
 

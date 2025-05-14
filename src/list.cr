@@ -5,7 +5,7 @@ module Meilisearch
     include Enumerable(T)
 
     field results : Array(T)
-    field offset : Int64
+    field offset : Int64 = 0
     field limit : Int64
     field total : Int64
 

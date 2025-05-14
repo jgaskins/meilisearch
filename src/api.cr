@@ -13,11 +13,9 @@ module Meilisearch
 
     private def response(response : HTTP::Client::Response, as return_type : T.class) forall T
       if response.success?
-        body = response.body_io? || response.body
-        T.from_json body
+        T.from_json response.body
       else
-        body = response.body_io?.try(&.gets_to_end) || response.body
-        raise Error.new("Unexpected response from Meilisearch: #{response.status} (#{response.status.code}) - #{body}")
+        raise Error.from_json(response.body)
       end
     end
 
@@ -42,10 +40,10 @@ module Meilisearch
       }
     end
 
-    class Error < Meilisearch::Error
+    class Exception < Meilisearch::Exception
     end
 
-    class TaskUnsuccessful < Error
+    class TaskUnsuccessful < Exception
     end
   end
 end

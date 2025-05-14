@@ -142,7 +142,7 @@ module Meilisearch
       Tasks.new self
     end
 
-    class TaskTimeout < Error
+    class TaskTimeout < Exception
     end
   end
 end
