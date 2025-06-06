@@ -62,7 +62,7 @@ module Meilisearch
       search_embedder : JSON::Any? = nil,
       pooling : String? = nil do
       enum Source
-        OpenAI
+        OpenAi
         HuggingFace
         Ollama
         REST
