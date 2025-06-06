@@ -1,4 +1,5 @@
 require "./resource"
+require "./hybrid_search"
 
 module Meilisearch
   struct Query < Resource
@@ -24,7 +25,7 @@ module Meilisearch
     field show_ranking_score_details : Bool?
     field ranking_score_threshold : Float64?
     field attributes_to_search_on : Array(String)?
-    field hybrid : JSON::Any?
+    field hybrid : HybridSearch?
     field vector : Array(Float64)?
     field retrieve_vectors : Bool?
     field locales : Array(String)?

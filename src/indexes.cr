@@ -4,6 +4,7 @@ require "./index"
 require "./task"
 require "./resource"
 require "./query"
+require "./hybrid_search"
 
 module Meilisearch
   struct Indexes < API
@@ -61,7 +62,7 @@ module Meilisearch
       show_ranking_score_details : Bool? = nil,
       ranking_score_threshold : Float? = nil,
       attributes_to_search_on : Array(String)? = nil,
-      hybrid : JSON::Any? = nil,
+      hybrid : HybridSearch? = nil,
       vector : Array(Float64)? = nil,
       retrieve_vectors : Bool? = nil,
       locales : Array(String)? = nil,
