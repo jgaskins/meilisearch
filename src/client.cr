@@ -13,7 +13,7 @@ module Meilisearch
 
     def initialize(
       api_key = ENV["MEILISEARCH_API_KEY"],
-      uri : URI = URI.parse("http://localhost:7700/?max_idle_pool_size=25"),
+      uri : URI = URI.parse(ENV.fetch("MEILISEARCH_URL", "http://localhost:7700/?max_idle_pool_size=25")),
       @timeout = 5.seconds,
     )
       authorization = "Bearer #{api_key}"
