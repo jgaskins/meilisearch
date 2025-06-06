@@ -259,6 +259,7 @@ module Meilisearch
         ranking_rules : Array(String)? = nil,
         typo_tolerance : Index::TypoTolerance? = nil,
         embedders : Index::Embedders? = nil,
+        timeout : Time::Span = client.timeout,
       )
         update! index.uid, **pass(
           filterable_attributes,
@@ -268,6 +269,7 @@ module Meilisearch
           ranking_rules,
           typo_tolerance,
           embedders,
+          timeout,
         )
       end
 
@@ -281,6 +283,7 @@ module Meilisearch
         ranking_rules : Array(String)? = nil,
         typo_tolerance : Index::TypoTolerance? = nil,
         embedders : Index::Embedders? = nil,
+        timeout : Time::Span = client.timeout,
       )
         task = update uid, **pass(
           filterable_attributes,
@@ -291,7 +294,7 @@ module Meilisearch
           typo_tolerance,
           embedders,
         )
-        task = client.wait_for_task(task, timeout: 2.seconds)
+        task = client.wait_for_task(task, timeout: timeout)
 
         successful(task) { get uid }
       end
