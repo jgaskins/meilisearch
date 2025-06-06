@@ -264,6 +264,9 @@ module Meilisearch
       # The embedders index setting value is invalid.
       InvalidSettingsEmbedder
 
+      # The embedders index setting value is invalid.
+      InvalidSettingsEmbedders
+
       # The facetSearch index setting value is invalid.
       InvalidSettingsFacetSearch
 
