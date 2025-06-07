@@ -42,6 +42,7 @@ module Meilisearch
     def search(
       uid : String,
       query : String? = nil,
+      *,
       offset : Int? = nil,
       limit : Int? = nil,
       hits_per_page : Int? = nil,
@@ -66,7 +67,6 @@ module Meilisearch
       vector : Array(Float64)? = nil,
       retrieve_vectors : Bool? = nil,
       locales : Array(String)? = nil,
-      *,
       as type : T.class = JSON::Any,
     ) forall T
       request = Query.new(
