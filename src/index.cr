@@ -18,9 +18,22 @@ module Meilisearch
       field searchable_attributes : Array(String)
       field filterable_attributes : Array(String)
       field sortable_attributes : Array(String)
+      field prefix_search : PrefixSearch
       field ranking_rules : Array(String)
+      field prefix_search : PrefixSearch
       field typo_tolerance : TypoTolerance
       field embedders : Embedders
+    end
+
+    enum PrefixSearch
+      IndexTime
+      Disabled
+
+      def to_json(json : JSON::Builder)
+        json.string do |io|
+          to_s.camelcase io, lower: true
+        end
+      end
     end
 
     struct TypoTolerance < Resource

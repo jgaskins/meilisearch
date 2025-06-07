@@ -257,6 +257,7 @@ module Meilisearch
         searchable_attributes : Array(String)? = nil,
         filterable_attributes : Array(String)? = nil,
         sortable_attributes : Array(String)? = nil,
+        prefix_search : Index::PrefixSearch? = nil,
         ranking_rules : Array(String)? = nil,
         typo_tolerance : Index::TypoTolerance? = nil,
         embedders : Index::Embedders? = nil,
@@ -267,6 +268,7 @@ module Meilisearch
           displayed_attributes,
           searchable_attributes,
           sortable_attributes,
+          prefix_search,
           ranking_rules,
           typo_tolerance,
           embedders,
@@ -281,6 +283,7 @@ module Meilisearch
         searchable_attributes : Array(String)? = nil,
         filterable_attributes : Array(String)? = nil,
         sortable_attributes : Array(String)? = nil,
+        prefix_search : Index::PrefixSearch? = nil,
         ranking_rules : Array(String)? = nil,
         typo_tolerance : Index::TypoTolerance? = nil,
         embedders : Index::Embedders? = nil,
@@ -291,6 +294,7 @@ module Meilisearch
           displayed_attributes,
           searchable_attributes,
           sortable_attributes,
+          prefix_search,
           ranking_rules,
           typo_tolerance,
           embedders,
@@ -307,6 +311,7 @@ module Meilisearch
         searchable_attributes : Array(String)? = nil,
         filterable_attributes : Array(String)? = nil,
         sortable_attributes : Array(String)? = nil,
+        prefix_search : Index::PrefixSearch? = nil,
         ranking_rules : Array(String)? = nil,
         typo_tolerance : Index::TypoTolerance? = nil,
         embedders : Index::Embedders? = nil,
@@ -316,6 +321,7 @@ module Meilisearch
           displayed_attributes,
           searchable_attributes,
           sortable_attributes,
+          prefix_search,
           ranking_rules,
           typo_tolerance,
           embedders,
@@ -329,6 +335,7 @@ module Meilisearch
         searchable_attributes : Array(String)? = nil,
         filterable_attributes : Array(String)? = nil,
         sortable_attributes : Array(String)? = nil,
+        prefix_search : Index::PrefixSearch? = nil,
         ranking_rules : Array(String)? = nil,
         typo_tolerance : Index::TypoTolerance? = nil,
         embedders : Index::Embedders? = nil,
@@ -338,6 +345,7 @@ module Meilisearch
           displayed_attributes,
           searchable_attributes,
           sortable_attributes,
+          prefix_search,
           ranking_rules,
           typo_tolerance,
           embedders,
@@ -354,6 +362,7 @@ module Meilisearch
         field searchable_attributes : Array(String)?
         field filterable_attributes : Array(String)?
         field sortable_attributes : Array(String)?
+        field prefix_search : Index::PrefixSearch?
         field ranking_rules : Array(String)?
         field typo_tolerance : Index::TypoTolerance?
         field embedders : Index::Embedders?
@@ -364,6 +373,7 @@ module Meilisearch
           @searchable_attributes : Array(String)? = nil,
           @filterable_attributes : Array(String)? = nil,
           @sortable_attributes : Array(String)? = nil,
+          @prefix_search : Index::PrefixSearch? = nil,
           @ranking_rules : Array(String)? = nil,
           @typo_tolerance : Index::TypoTolerance? = nil,
           @embedders : Index::Embedders? = nil,
