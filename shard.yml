@@ -9,6 +9,8 @@ dependencies:
     github: jgaskins/http_client
   duration:
     github: jgaskins/duration
+  pipe:
+    github: jgaskins/pipe
 
 development_dependencies:
   meilisearch:

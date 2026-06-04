@@ -68,7 +68,7 @@ module Meilisearch
     # meilisearch.docs.upsert "users", [{id: 1, email: "jamie@example.com"}]
     # ```
     def upsert(index_uid : String, documents : Enumerable)
-      reader, writer = IO.pipe
+      reader, writer = Pipe.create
       spawn do
         documents.each do |doc|
           JSON.build writer do |json|
