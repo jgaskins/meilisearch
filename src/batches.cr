@@ -54,4 +54,10 @@ module Meilisearch
       delegate each, to: results
     end
   end
+
+  class Client
+    def batches
+      Batches.new self
+    end
+  end
 end

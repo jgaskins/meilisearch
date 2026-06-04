@@ -70,28 +70,6 @@ module Meilisearch
       Query.new(**options)
     end
 
-    def index(uid : String) : IndexClient
-      IndexClient.new(uid, self)
-    end
-
-    def indexes
-      Indexes.new self
-    end
-
-    # Alias for `documents`
-    def docs
-      documents
-    end
-
-    # The `Documents` API in the context of the current client
-    def documents
-      Documents.new self
-    end
-
-    def batches
-      Batches.new self
-    end
-
     def wait_for_task(task : Task, *, timeout : Time::Span = self.timeout, poll_interval : Time::Span = 100.milliseconds)
       wait_for_task task.uid, timeout: timeout, poll_interval: poll_interval
     end
@@ -138,18 +116,7 @@ module Meilisearch
       yield
     end
 
-    def tasks
-      Tasks.new self
-    end
-
     class TaskTimeout < Exception
     end
   end
 end
-
-require "./documents"
-require "./indexes"
-require "./tasks"
-require "./multi_search"
-require "./index_client"
-require "./api"

@@ -382,4 +382,10 @@ module Meilisearch
       end
     end
   end
+
+  class Client
+    def indexes
+      Indexes.new self
+    end
+  end
 end

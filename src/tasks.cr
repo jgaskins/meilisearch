@@ -76,4 +76,10 @@ module Meilisearch
       response http.get("/tasks?#{params}"), as: List(Task)
     end
   end
+
+  class Client
+    def tasks
+      Tasks.new self
+    end
+  end
 end

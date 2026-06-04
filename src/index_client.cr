@@ -1,5 +1,4 @@
 require "./api"
-require "./client"
 
 module Meilisearch
   struct IndexClient < API
@@ -45,6 +44,12 @@ module Meilisearch
 
     def update_filterable_attributes(attributes : Array(String))
       @client.indexes.settings.update @uid, filterable_attributes: attributes
+    end
+  end
+
+  class Client
+    def index(uid : String) : IndexClient
+      IndexClient.new(uid, self)
     end
   end
 end

@@ -275,4 +275,16 @@ module Meilisearch
       end
     end
   end
+
+  class Client
+    # Alias for `documents`
+    def docs
+      documents
+    end
+
+    # The `Documents` API in the context of the current client
+    def documents
+      Documents.new self
+    end
+  end
 end
