@@ -1,3 +1,5 @@
+require "json"
+
 require "./api"
 require "./resource"
 
@@ -176,8 +178,25 @@ module Meilisearch
     # ```
     # meilisearch.docs.fetch index, filter: "status = 'active'", as: User
     # ```
-    def fetch(index : Index, *, filter : String | Array(String) | Nil = nil, as type : T.class = JSON::Any) forall T
-      fetch index.uid, filter: filter, as: T
+    def fetch(
+      index : Index,
+      *,
+      offset : Int64? = nil,
+      limit : Int32? = nil,
+      fields : Array(String)? = nil,
+      ids : Array(String)? = nil,
+      filter : String? = nil,
+      sort : Array(String)? = nil,
+      as : T.class = JSON::Any,
+    ) forall T
+      fetch index.uid,
+        offset: offset,
+        limit: limit,
+        fields: fields,
+        ids: ids,
+        filter: filter,
+        sort: sort,
+        as: T
     end
 
     # Fetch the documents with the given filter and convert them to the type `T`.
@@ -187,13 +206,29 @@ module Meilisearch
     # ```
     # meilisearch.docs.fetch "users", filter: "status = 'active'", as: User
     # ```
-    def fetch(index_uid : String, *, filter : String | Array(String) | Nil = nil, as type : T.class = JSON::Any) forall T
+    def fetch(
+      index_uid : String,
+      *,
+      offset : Int64? = nil,
+      limit : Int32? = nil,
+      fields : Array(String)? = nil,
+      ids : Array(String)? = nil,
+      filter : String? = nil,
+      sort : Array(String)? = nil,
+      as : T.class = JSON::Any,
+    ) forall T
       request = FetchRequest.new(
+        offset: offset,
+        limit: limit,
+        fields: fields,
+        ids: ids,
         filter: filter,
+        sort: sort,
       )
+
       response(
         http.post("/indexes/#{index_uid}/documents/fetch", body: request.to_json),
-        as: List(T)
+        as: List(T),
       )
     end
 
@@ -262,15 +297,19 @@ module Meilisearch
     private struct FetchRequest < Resource
       field filter : String | Array(String) | Nil
       field fields : Array(String)?
+      field ids : Array(String)?
       field offset : Int64?
       field limit : Int32?
+      field sort : Array(String)?
 
       def initialize(
         *,
         @offset = nil,
         @limit = nil,
+        @ids = nil,
         @fields = nil,
         @filter = nil,
+        @sort = nil,
       )
       end
     end

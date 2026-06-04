@@ -142,6 +142,8 @@ module Meilisearch
       # The offset parameter is invalid. It should be an integer.
       InvalidDocumentOffset
 
+      InvalidDocumentSort
+
       # The provided _geo field of one or more documents is invalid. Meilisearch expects _geo to be an object with two fields, lat and lng, each containing geographic coordinates expressed as a string or floating point number. Read more about _geo and how to troubleshoot it in our dedicated guide.
       InvalidDocumentGeoField
 

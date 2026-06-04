@@ -20,13 +20,12 @@ module Meilisearch
       field sortable_attributes : Array(String)
       field prefix_search : PrefixSearch
       field ranking_rules : Array(String)
-      field prefix_search : PrefixSearch
       field typo_tolerance : TypoTolerance
       field embedders : Embedders
     end
 
     enum PrefixSearch
-      IndexTime
+      IndexingTime
       Disabled
 
       def to_json(json : JSON::Builder)
