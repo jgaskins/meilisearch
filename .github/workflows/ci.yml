@@ -60,6 +60,6 @@ jobs:
       run: shards install
 
     - name: Run tests
-      run: crystal spec --verbose --no-color
+      run: crystal spec --no-color
       env:
         MEILISEARCH_API_KEY: X30-IR0dDR_Hln8XYQI_SpAVtDtu0NIrCH8EeGKrSsQ
