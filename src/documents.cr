@@ -1,4 +1,5 @@
 require "json"
+require "pipe"
 
 require "./api"
 require "./resource"
