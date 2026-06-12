@@ -19,7 +19,8 @@ jobs:
         - latest
         - nightly
         meilisearch_version:
-        - v1.14
+        - v1.46
+        - latest
 
     services:
       meilisearch:
